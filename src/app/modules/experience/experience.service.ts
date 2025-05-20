@@ -13,20 +13,17 @@ const createExperienceIntoDB = async (
 ) => {
   const { experience } = experienceImages;
   if (!experience || experience.length === 0) {
-    throw new AppError(StatusCodes.BAD_REQUEST, 'Post images are required!');
+    throw new AppError(
+      StatusCodes.BAD_REQUEST,
+      'Experience images are required!',
+    );
   }
 
   // set an array of all images path
   experienceData.images = experience.map((image) => image.path);
 
-  // // checking post url if post exists
-  // const post = await Experience.findOne({ url: postData.url });
-  // if (post) {
-  //   throw new AppError(StatusCodes.NOT_FOUND, 'Url already used!');
-  // } // url:unique in Experience model (using to show error message in data.massage)
-
   const result = Experience.create(experienceData);
-  // const data = new Experience(postData);
+  // const data = new Experience(experienceData);
   // const result = await data.save();
 
   return result;
@@ -39,51 +36,57 @@ const getAllExperiencesFromDB = async () => {
 };
 
 // getExperienceByIdFromDB
-const getExperienceByIdFromDB = async (postID: string) => {
+const getExperienceByIdFromDB = async (experienceId: string) => {
   // checking the _id validation for aggregate
-  // if (!Types.ObjectId.isValid(postID)) {
+  // if (!Types.ObjectId.isValid(experienceId)) {
   //   throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid ID!'); // match with handleCastError
   // }
   // const result = await Experience.aggregate([
-  //   { $match: { _id: new Types.ObjectId(postID) } },
+  //   { $match: { _id: new Types.ObjectId(experienceId) } },
   // ]);
   //  return result[0] || null;
 
-  // checking if the Post is exist
-  const post = await Experience.findById(postID);
-  if (!post) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!');
+  // checking if the Experience is exist
+  const experience = await Experience.findById(experienceId);
+  if (!experience) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Experience not found!');
   }
 
-  // checking if the Post is already deleted
-  const isDeleted = post?.isDeleted;
+  // checking if the Experience is already deleted
+  const isDeleted = experience?.isDeleted;
   if (isDeleted) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This post is already deleted!');
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'This experience is already deleted!',
+    );
   }
 
-  return post;
+  return experience;
 };
 
 // updateExperienceByIdIntoDB
 const updateExperienceByIdIntoDB = async (
-  postID: string,
-  postImages: IImageFiles,
+  experienceId: string,
+  experienceImages: IImageFiles,
   updateData: TExperience,
 ) => {
-  // checking if the Post is exist
-  const savedPost = await Experience.findById(postID);
-  if (!savedPost) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!');
+  // checking if the Experience is exist
+  const savedExperience = await Experience.findById(experienceId);
+  if (!savedExperience) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Experience not found!');
   }
 
-  // checking if the Post is already deleted
-  const isDeleted = savedPost?.isDeleted;
+  // checking if the Experience is already deleted
+  const isDeleted = savedExperience?.isDeleted;
   if (isDeleted) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This post is already deleted!');
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'This experience is already deleted!',
+    );
   }
 
   // images part optional for updating
-  const { experience } = postImages;
+  const { experience } = experienceImages;
   if (experience) {
     // set an array of all images path
     const newImages = experience.map((image) => image.path);
@@ -94,27 +97,30 @@ const updateExperienceByIdIntoDB = async (
     }
   }
 
-  savedPost.set(updateData);
-  const result = await savedPost.save();
+  savedExperience.set(updateData);
+  const result = await savedExperience.save();
   return result;
 };
 
 // deleteExperienceByIdFromDB
-const deleteExperienceByIdFromDB = async (postId: string) => {
-  // checking if the Post is exist
-  const post = await Experience.findById(postId);
-  if (!post) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!');
+const deleteExperienceByIdFromDB = async (experienceId: string) => {
+  // checking if the Experience is exist
+  const experience = await Experience.findById(experienceId);
+  if (!experience) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Experience not found!');
   }
 
-  // checking if the Post is already deleted
-  const isDeleted = post?.isDeleted;
+  // checking if the Experience is already deleted
+  const isDeleted = experience?.isDeleted;
   if (isDeleted) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This post is already deleted!');
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'This experience is already deleted!',
+    );
   }
 
   // soft delete - update the isDeleted field to true
-  await Experience.findByIdAndUpdate(postId, { isDeleted: true });
+  await Experience.findByIdAndUpdate(experienceId, { isDeleted: true });
 
   return null;
 };

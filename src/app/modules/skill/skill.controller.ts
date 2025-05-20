@@ -32,6 +32,20 @@ const getAllSkills = tryCatchAsync(async (req, res) => {
   });
 });
 
+// getSkillById
+const getSkillById = tryCatchAsync(async (req, res) => {
+  const id = req.params.id;
+
+  const result = await skillService.getSkillByIdFromDB(id);
+
+  sendResponse<any>(res, {
+    statusCode: StatusCodes.OK,
+    success: true,
+    message: 'Skill retrieved successfully!',
+    data: result,
+  });
+});
+
 // updateSkillById
 const updateSkillById = tryCatchAsync(async (req, res) => {
   const { id } = req.params;
@@ -67,6 +81,7 @@ const deleteSkillById = tryCatchAsync(async (req, res) => {
 export const skillController = {
   createSkill,
   getAllSkills,
+  getSkillById,
   updateSkillById,
   deleteSkillById,
 };

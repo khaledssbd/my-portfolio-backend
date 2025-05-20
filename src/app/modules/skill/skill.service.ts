@@ -18,7 +18,7 @@ const createSkillIntoDB = async (
   // }
 
   const result = Skill.create(skillData);
-  // const data = new Skill(postData);
+  // const data = new Skill(skillData);
   // const result = await data.save();
 
   return result;
@@ -30,6 +30,32 @@ const getAllSkillsFromDB = async () => {
   return result;
 };
 
+// getSkillByIdFromDB
+const getSkillByIdFromDB = async (skillId: string) => {
+  // checking the _id validation for aggregate
+  // if (!Types.ObjectId.isValid(skillId)) {
+  //   throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid ID!'); // match with handleCastError
+  // }
+  // const result = await Skill.aggregate([
+  //   { $match: { _id: new Types.ObjectId(skillId) } },
+  // ]);
+  //  return result[0] || null;
+
+  // checking if the Skill is exist
+  const skill = await Skill.findById(skillId);
+  if (!skill) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Skill not found!');
+  }
+
+  // checking if the Skill is already deleted
+  const isDeleted = skill?.isDeleted;
+  if (isDeleted) {
+    throw new AppError(StatusCodes.FORBIDDEN, 'This skill is already deleted!');
+  }
+
+  return skill;
+};
+
 // updateSkillByIdIntoDB
 const updateSkillByIdIntoDB = async (
   skillID: string,
@@ -37,13 +63,13 @@ const updateSkillByIdIntoDB = async (
   updateData: TSkill,
 ) => {
   // checking if the Skill is exist
-  const savedPost = await Skill.findById(skillID);
-  if (!savedPost) {
+  const savedSkill = await Skill.findById(skillID);
+  if (!savedSkill) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Skill not found!');
   }
 
   // checking if the Skill is already deleted
-  const isDeleted = savedPost?.isDeleted;
+  const isDeleted = savedSkill?.isDeleted;
   if (isDeleted) {
     throw new AppError(StatusCodes.FORBIDDEN, 'This skill is already deleted!');
   }
@@ -54,27 +80,27 @@ const updateSkillByIdIntoDB = async (
   //   updateData.icon = image.path;
   // }
 
-  savedPost.set(updateData);
-  const result = await savedPost.save();
+  savedSkill.set(updateData);
+  const result = await savedSkill.save();
   return result;
 };
 
 // deleteSkillByIdFromDB
-const deleteSkillByIdFromDB = async (postId: string) => {
-  // checking if the Post is exist
-  const post = await Skill.findById(postId);
-  if (!post) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!');
+const deleteSkillByIdFromDB = async (skillId: string) => {
+  // checking if the Skill is exist
+  const skill = await Skill.findById(skillId);
+  if (!skill) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Skill not found!');
   }
 
-  // checking if the Post is already deleted
-  const isDeleted = post?.isDeleted;
+  // checking if the Skill is already deleted
+  const isDeleted = skill?.isDeleted;
   if (isDeleted) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This post is already deleted!');
+    throw new AppError(StatusCodes.FORBIDDEN, 'This skill is already deleted!');
   }
 
   // soft delete - update the isDeleted field to true
-  await Skill.findByIdAndUpdate(postId, { isDeleted: true });
+  await Skill.findByIdAndUpdate(skillId, { isDeleted: true });
 
   return null;
 };
@@ -82,6 +108,7 @@ const deleteSkillByIdFromDB = async (postId: string) => {
 export const skillService = {
   createSkillIntoDB,
   getAllSkillsFromDB,
+  getSkillByIdFromDB,
   updateSkillByIdIntoDB,
   deleteSkillByIdFromDB,
 };

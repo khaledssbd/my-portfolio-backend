@@ -18,6 +18,9 @@ router.post(
 // get all Skills
 router.get('/', skillController.getAllSkills);
 
+// get Skill by id
+router.get('/:id', skillController.getSkillById);
+
 // update Skill by id
 router.patch(
   '/update/:id',

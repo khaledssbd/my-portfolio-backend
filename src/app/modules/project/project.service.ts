@@ -17,14 +17,8 @@ const createProjectIntoDB = async (
     projectData.image = image.path;
   }
 
-  // // checking post url if post exists
-  // const post = await Project.findOne({ url: postData.url });
-  // if (post) {
-  //   throw new AppError(StatusCodes.NOT_FOUND, 'Url already used!');
-  // } // url:unique in Project model (using to show error message in data.massage)
-
   const result = Project.create(projectData);
-  // const data = new Project(postData);
+  // const data = new Project(projectData);
   // const result = await data.save();
 
   return result;
@@ -37,18 +31,18 @@ const getAllProjectsFromDB = async () => {
 };
 
 // getProjectByIdFromDB
-const getProjectByIdFromDB = async (projectID: string) => {
+const getProjectByIdFromDB = async (projectId: string) => {
   // checking the _id validation for aggregate
-  // if (!Types.ObjectId.isValid(postID)) {
+  // if (!Types.ObjectId.isValid(projectId)) {
   //   throw new AppError(StatusCodes.BAD_REQUEST, 'Invalid ID!'); // match with handleCastError
   // }
   // const result = await Project.aggregate([
-  //   { $match: { _id: new Types.ObjectId(postID) } },
+  //   { $match: { _id: new Types.ObjectId(projectId) } },
   // ]);
   //  return result[0] || null;
 
   // checking if the Project is exist
-  const project = await Project.findById(projectID);
+  const project = await Project.findById(projectId);
   if (!project) {
     throw new AppError(StatusCodes.NOT_FOUND, 'Project not found!');
   }
@@ -67,20 +61,23 @@ const getProjectByIdFromDB = async (projectID: string) => {
 
 // updateProjectByIdIntoDB
 const updateProjectByIdIntoDB = async (
-  postID: string,
+  projectId: string,
   image: IImageFile,
   updateData: TProject,
 ) => {
-  // checking if the Post is exist
-  const savedPost = await Project.findById(postID);
-  if (!savedPost) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!');
+  // checking if the Project is exist
+  const savedProject = await Project.findById(projectId);
+  if (!savedProject) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Project not found!');
   }
 
-  // checking if the Post is already deleted
-  const isDeleted = savedPost?.isDeleted;
+  // checking if the Project is already deleted
+  const isDeleted = savedProject?.isDeleted;
   if (isDeleted) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This post is already deleted!');
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'This project is already deleted!',
+    );
   }
 
   // image part optional for updating
@@ -89,27 +86,30 @@ const updateProjectByIdIntoDB = async (
     updateData.image = image.path;
   }
 
-  savedPost.set(updateData);
-  const result = await savedPost.save();
+  savedProject.set(updateData);
+  const result = await savedProject.save();
   return result;
 };
 
 // deleteProjectByIdFromDB
-const deleteProjectByIdFromDB = async (postId: string) => {
-  // checking if the Post is exist
-  const post = await Project.findById(postId);
-  if (!post) {
-    throw new AppError(StatusCodes.NOT_FOUND, 'Post not found!');
+const deleteProjectByIdFromDB = async (projectId: string) => {
+  // checking if the Project is exist
+  const project = await Project.findById(projectId);
+  if (!project) {
+    throw new AppError(StatusCodes.NOT_FOUND, 'Project not found!');
   }
 
-  // checking if the Post is already deleted
-  const isDeleted = post?.isDeleted;
+  // checking if the Project is already deleted
+  const isDeleted = project?.isDeleted;
   if (isDeleted) {
-    throw new AppError(StatusCodes.FORBIDDEN, 'This post is already deleted!');
+    throw new AppError(
+      StatusCodes.FORBIDDEN,
+      'This project is already deleted!',
+    );
   }
 
   // soft delete - update the isDeleted field to true
-  await Project.findByIdAndUpdate(postId, { isDeleted: true });
+  await Project.findByIdAndUpdate(projectId, { isDeleted: true });
 
   return null;
 };
