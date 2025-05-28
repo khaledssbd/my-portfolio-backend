@@ -22,13 +22,14 @@ const createExperience = tryCatchAsync(async (req, res) => {
 
 // getAllExperiences
 const getAllExperiences = tryCatchAsync(async (req, res) => {
-  const result = await experienceService.getAllExperiencesFromDB();
+  const result = await experienceService.getAllExperiencesFromDB(req.query);
 
   sendResponse<any>(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Experiences retrieved successfully!',
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 

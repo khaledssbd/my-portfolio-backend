@@ -3,6 +3,7 @@ import { TExperience } from './experience.interface';
 import AppError from '../../errors/AppError';
 import { StatusCodes } from 'http-status-codes';
 import { IImageFiles } from '../../interface/ImageFile';
+import QueryBuilder from '../../builder/QueryBuilder';
 // import { JwtPayload } from 'jsonwebtoken';
 // import { Types } from 'mongoose';
 
@@ -30,9 +31,22 @@ const createExperienceIntoDB = async (
 };
 
 // getAllExperiencesFromDB
-const getAllExperiencesFromDB = async () => {
-  const result = await Experience.find();
-  return result;
+const getAllExperiencesFromDB = async (query: Record<string, unknown>) => {
+  const allExperiencesQuery = new QueryBuilder(Experience.find(), query)
+    .search([])
+    .filter()
+    .range()
+    .sort()
+    .paginate()
+    .fields();
+
+  const data = await allExperiencesQuery.modelQuery;
+  const meta = await allExperiencesQuery.countTotal();
+
+  return {
+    data,
+    meta,
+  };
 };
 
 // getExperienceByIdFromDB

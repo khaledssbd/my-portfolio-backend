@@ -40,7 +40,7 @@ const createBlogPostIntoDB = async (
 
 // getAllBlogPostsFromDB
 const getAllBlogPostsFromDB = async (query: Record<string, unknown>) => {
-  const allBlogPostQuery = new QueryBuilder(
+  const allBlogPostsQuery = new QueryBuilder(
     BlogPost.find().populate('author'),
     query,
   )
@@ -51,8 +51,8 @@ const getAllBlogPostsFromDB = async (query: Record<string, unknown>) => {
     .paginate()
     .fields();
 
-  const data = await allBlogPostQuery.modelQuery;
-  const meta = await allBlogPostQuery.countTotal();
+  const data = await allBlogPostsQuery.modelQuery;
+  const meta = await allBlogPostsQuery.countTotal();
 
   return {
     data,

@@ -22,13 +22,14 @@ const createSkill = tryCatchAsync(async (req, res) => {
 
 // getAllSkills
 const getAllSkills = tryCatchAsync(async (req, res) => {
-  const result = await skillService.getAllSkillsFromDB();
+  const result = await skillService.getAllSkillsFromDB(req.query);
 
   sendResponse<any>(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Skills retrieved successfully!',
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 

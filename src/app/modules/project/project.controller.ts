@@ -22,13 +22,14 @@ const createProject = tryCatchAsync(async (req, res) => {
 
 // getAllProjects
 const getAllProjects = tryCatchAsync(async (req, res) => {
-  const result = await projectService.getAllProjectsFromDB();
+  const result = await projectService.getAllProjectsFromDB(req.query);
 
   sendResponse<any>(res, {
     statusCode: StatusCodes.OK,
     success: true,
     message: 'Projects retrieved successfully!',
-    data: result,
+    data: result.data,
+    meta: result.meta,
   });
 });
 

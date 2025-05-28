@@ -2,6 +2,7 @@ import { Skill } from './skill.model';
 import { TSkill } from './skill.interface';
 import AppError from '../../errors/AppError';
 import { StatusCodes } from 'http-status-codes';
+import QueryBuilder from '../../builder/QueryBuilder';
 // import { IImageFile } from '../../interface/ImageFile';
 // import { JwtPayload } from 'jsonwebtoken';
 // import { Types } from 'mongoose';
@@ -25,9 +26,22 @@ const createSkillIntoDB = async (
 };
 
 // getAllSkillsFromDB
-const getAllSkillsFromDB = async () => {
-  const result = await Skill.find();
-  return result;
+const getAllSkillsFromDB = async (query: Record<string, unknown>) => {
+  const allSkillsQuery = new QueryBuilder(Skill.find(), query)
+    .search([])
+    .filter()
+    .range()
+    .sort()
+    .paginate()
+    .fields();
+
+  const data = await allSkillsQuery.modelQuery;
+  const meta = await allSkillsQuery.countTotal();
+
+  return {
+    data,
+    meta,
+  };
 };
 
 // getSkillByIdFromDB

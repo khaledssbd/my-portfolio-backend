@@ -3,6 +3,7 @@ import { TProject } from './project.interface';
 import AppError from '../../errors/AppError';
 import { StatusCodes } from 'http-status-codes';
 import { IImageFile } from '../../interface/ImageFile';
+import QueryBuilder from '../../builder/QueryBuilder';
 // import { JwtPayload } from 'jsonwebtoken';
 // import { Types } from 'mongoose';
 
@@ -25,9 +26,22 @@ const createProjectIntoDB = async (
 };
 
 // getAllProjectsFromDB
-const getAllProjectsFromDB = async () => {
-  const result = await Project.find();
-  return result;
+const getAllProjectsFromDB = async (query: Record<string, unknown>) => {
+  const allProjectsQuery = new QueryBuilder(Project.find(), query)
+    .search([])
+    .filter()
+    .range()
+    .sort()
+    .paginate()
+    .fields();
+
+  const data = await allProjectsQuery.modelQuery;
+  const meta = await allProjectsQuery.countTotal();
+
+  return {
+    data,
+    meta,
+  };
 };
 
 // getProjectByIdFromDB
